@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG - Advanced Filter Effects</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            margin: 0;
+            padding: 5px;
+        }
+        h1 {
+            border-bottom: 2px solid #d2d2d7;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .test-card {
+            background: #ffffff;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .test-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            width: 100%;
+            text-align: left;
+            color: #86868b;
+        }
+        .test-card p {
+            margin: 8px 0 0 0;
+            font-size: 12px;
+            color: #515154;
+            width: 100%;
+            line-height: 1.4;
+        }
+        svg {
+            background-color: #fafafa;
+            border: 1px dashed #bcbcf2;
+            width: 350px;
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>SVG - Advanced Filter Effects</h1>
+    
+    <div class="grid">
+
+        <!-- Card 1: Perlin Noise & Procedural Textures -->
+        <div class="test-card">
+            <h3>1. Procedural Noise (&lt;feTurbulence&gt; type & baseFrequency)</h3>
+            <svg width="350" height="100" viewBox="0 0 350 100">
+                <defs>
+                    <!-- Fractal Noise -->
+                    <filter id="fractal-noise" x="0%" y="0%" width="100%" height="100%">
+                        <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3"/>
+                    </filter>
+                    <!-- Turbulence Texture -->
+                    <filter id="turbulence-noise" x="0%" y="0%" width="100%" height="100%">
+                        <feTurbulence type="turbulence" baseFrequency="0.02 0.1" numOctaves="2"/>
+                    </filter>
+                </defs>
+
+                <!-- Surface 1: Smooth Cloud/Marble Noise -->
+                <rect x="20" y="15" width="140" height="70" rx="8" filter="url(#fractal-noise)"/>
+
+                <!-- Surface 2: Directional Wood/Flame Texture -->
+                <rect x="190" y="15" width="140" height="70" rx="8" filter="url(#turbulence-noise)"/>
+            </svg>
+            <p>Tests procedural noise generation using <code>&lt;feTurbulence&gt;</code> comparing <code>fractalNoise</code> vs <code>turbulence</code> modes.</p>
+        </div>
+
+        <!-- Card 2: Displacement Distortion on Vector Graphics & Multi-Language Text -->
+        <div class="test-card">
+            <h3>2. Displacement Mapping (&lt;feDisplacementMap&gt;)</h3>
+            <svg width="350" height="100" viewBox="0 0 350 100">
+                <defs>
+                    <filter id="ripple-distortion" x="-10%" y="-10%" width="120%" height="120%">
+                        <feTurbulence type="turbulence" baseFrequency="0.05" numOctaves="2" result="noise"/>
+                        <feDisplacementMap in="SourceGraphic" in2="noise" scale="15" xChannelSelector="R" yChannelSelector="G"/>
+                    </filter>
+                </defs>
+
+                <g filter="url(#ripple-distortion)">
+                    <!-- Shapes subject to displacement distortion -->
+                    <rect x="15" y="20" width="50" height="60" fill="#007aff" rx="6"/>
+                    <circle cx="95" cy="50" r="25" fill="#ff9500"/>
+
+                    <!-- Multi-Language Text distorted by displacement map -->
+                    <text x="140" y="35" font-size="14" font-weight="bold" fill="#34c759">RIPPLE</text>
+                    <text x="140" y="60" font-size="14" font-weight="bold" fill="#5856d6">水波扭曲</text>
+                    <text x="335" y="85" font-size="14" font-weight="bold" text-anchor="start" direction="rtl" unicode-bidi="bidi-override" fill="#ff3b30">تأثير تموج</text>
+                </g>
+            </svg>
+            <p>Tests geometric displacement distortion on vector paths and multi-language text using <code>&lt;feDisplacementMap&gt;</code>.</p>
+        </div>
+
+        <!-- Card 3: Image Processing Matrices (Emboss & Sharpen) -->
+        <div class="test-card">
+            <h3>3. Kernel Convolution Matrices (&lt;feConvolveMatrix&gt;)</h3>
+            <svg width="350" height="100" viewBox="0 0 350 100">
+                <defs>
+                    <!-- Emboss Kernel Filter -->
+                    <filter id="emboss-matrix">
+                        <feConvolveMatrix order="3,3" kernelMatrix="-2 -1 0
+                                                                     -1  1 1
+                                                                      0  1 2"/>
+                    </filter>
+                    <!-- Edge Detection Kernel Filter -->
+                    <filter id="edge-matrix">
+                        <feConvolveMatrix order="3,3" kernelMatrix="0 -1  0
+                                                                    -1  4 -1
+                                                                     0 -1  0"/>
+                    </filter>
+                </defs>
+
+                <!-- Source Baseline Group 1 -->
+                <g transform="translate(15, 15)">
+                    <rect x="0" y="0" width="140" height="70" fill="#f0f0f7" stroke="#d2d2d7"/>
+                    <circle cx="45" cy="35" r="25" fill="#af52de"/>
+                    <polygon points="110,15 130,55 90,55" fill="#34c759"/>
+                </g>
+
+                <!-- Embossed Result -->
+                <g transform="translate(15, 15)" filter="url(#emboss-matrix)">
+                    <!-- Duplicate overlay showing convolution effect -->
+                </g>
+
+                <!-- Edge Detect Result Group 2 -->
+                <g transform="translate(195, 15)" filter="url(#edge-matrix)">
+                    <rect x="0" y="0" width="140" height="70" fill="#007aff"/>
+                    <circle cx="45" cy="35" r="25" fill="#ffcc00"/>
+                    <polygon points="110,15 130,55 90,55" fill="#ff3b30"/>
+                </g>
+            </svg>
+            <p>Tests spatial pixel neighborhood transformations using <code>&lt;feConvolveMatrix&gt;</code> for 3x3 embossing and edge detection kernels.</p>
+        </div>
+
+        <!-- Card 4: 3D Lighting & Specular Shading -->
+        <div class="test-card">
+            <h3>4. 3D Lighting Effects (&lt;feDiffuseLighting&gt; & &lt;feSpecularLighting&gt;)</h3>
+            <svg width="350" height="100" viewBox="0 0 350 100">
+                <defs>
+                    <!-- Diffuse Bump Map Lighting -->
+                    <filter id="diffuse-light" x="0%" y="0%" width="100%" height="100%">
+                        <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" result="noise"/>
+                        <feDiffuseLighting in="noise" lighting-color="#ffffff" surfaceScale="3" result="light">
+                            <feDistantLight azimuth="45" elevation="60"/>
+                        </feDiffuseLighting>
+                        <feBlend mode="multiply" in="SourceGraphic" in2="light"/>
+                    </filter>
+
+                    <!-- Specular Highlight Lighting -->
+                    <filter id="specular-light" x="-10%" y="-10%" width="120%" height="120%">
+                        <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>
+                        <feSpecularLighting in="blur" surfaceScale="5" specularConstant="1" specularExponent="20" lighting-color="#ffffff" result="spec">
+                            <feDistantLight azimuth="225" elevation="45"/>
+                        </feSpecularLighting>
+                        <feComposite in="spec" in2="SourceAlpha" operator="in" result="specOut"/>
+                        <feComposite in="SourceGraphic" in2="specOut" operator="arithmetic" k1="0" k2="1" k3="1" k4="0"/>
+                    </filter>
+                </defs>
+
+                <!-- Diffuse Texture Light Surface -->
+                <g filter="url(#diffuse-light)">
+                    <rect x="20" y="15" width="140" height="70" rx="10" fill="#007aff"/>
+                    <circle cx="90" cy="50" r="25" fill="#ff9500"/>
+                </g>
+
+                <!-- 3D Specular Highlighted Shapes -->
+                <g filter="url(#specular-light)">
+                    <rect x="190" y="15" width="65" height="70" rx="10" fill="#5856d6"/>
+                    <circle cx="295" cy="50" r="30" fill="#ff3b30"/>
+                </g>
+            </svg>
+            <p>Tests simulated 3D light sources using <code>&lt;feDiffuseLighting&gt;</code>, <code>&lt;feSpecularLighting&gt;</code>, and directional <code>&lt;feDistantLight&gt;</code>.</p>
+        </div>
+
+    </div>
+
+</body>
+</html>
