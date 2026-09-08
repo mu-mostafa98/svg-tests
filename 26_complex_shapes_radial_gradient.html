@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Engine Test: 26_complex_shapes_radial_gradient.html</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            border-bottom: 2px solid #d2d2d7;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            margin: 30px 0 12px 0;
+            padding: 8px 14px;
+            font-size: 16px;
+            border-radius: 6px;
+            background: #fdeceb;
+            color: #c62828;
+            border: 1px solid #f5c6c2;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .test-card {
+            background: #ffffff;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .test-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            width: 100%;
+            text-align: left;
+            color: #86868b;
+        }
+        .test-card p {
+            margin: 8px 0 0 0;
+            font-size: 12px;
+            color: #515154;
+            width: 100%;
+            line-height: 1.4;
+        }
+        .badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 6px;
+            vertical-align: middle;
+            background: #c62828;
+            color: #ffffff;
+        }
+        svg {
+            background-color: #fafafa;
+            border: 1px dashed #bcbcf2;
+            width: 200px;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>SVG Engine Test Suite: Complex Shapes — Radial Gradients (all fallback to vello)</h1>
+    <p style="max-width: 720px; color:#515154; line-height:1.5;">
+        Each card renders the same radial-gradient feature on all four <strong>complex shapes</strong>
+        (line, polygon, polyline, path). None of these shapes is native-gradient capable — the engine
+        can only emit a native gradient inside a rect/circle/ellipse, so <strong>every</strong> case
+        here rasterizes on the CPU (vello). The feature set mirrors
+        <code>25_basic_shapes_radial_gradient.html</code> so testers can compare native vs fallback
+        rendering of the identical gradient.
+    </p>
+
+    <h2>All features fall back to vello (complex shapes have no native gradient path)</h2>
+    <div class="grid">
+
+        <!-- 1. DEFAULT CONCENTRIC -->
+        <div class="test-card">
+            <h3>Test 26.1: Default Concentric <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <radialGradient id="rg-default">
+                        <stop offset="0%" stop-color="#007aff" />
+                        <stop offset="100%" stop-color="#34c759" />
+                    </radialGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#rg-default)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#rg-default)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#rg-default)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#rg-default)" />
+            </svg>
+            <p><strong>Expect:</strong> Concentric blue→green radial from each shape's center.</p>
+        </div>
+
+        <!-- 2. OBJECT BOUNDING BOX STRETCH -->
+        <div class="test-card">
+            <h3>Test 26.2: objectBoundingBox Stretch <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <radialGradient id="rg-bbox" cx="50%" cy="50%" r="50%" gradientUnits="objectBoundingBox">
+                        <stop offset="0%" stop-color="#5856d6" />
+                        <stop offset="100%" stop-color="#ff2a68" />
+                    </radialGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#rg-bbox)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#rg-bbox)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#rg-bbox)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#rg-bbox)" />
+            </svg>
+            <p><strong>Expect:</strong> The radial stretches to each shape's bounding box, so wide shapes show flattened elliptical rings.</p>
+        </div>
+
+        <!-- 3. USER SPACE ON USE -->
+        <div class="test-card">
+            <h3>Test 26.3: userSpaceOnUse Aspect <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <radialGradient id="rg-user" cx="50" cy="50" r="45" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#5856d6" />
+                        <stop offset="100%" stop-color="#ff2a68" />
+                    </radialGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#rg-user)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#rg-user)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#rg-user)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#rg-user)" />
+            </svg>
+            <p><strong>Expect:</strong> One shared radial (center 50,50, radius 45) in canvas space; each shape shows a different window, aspect preserved.</p>
+        </div>
+
+        <!-- 4. SPREAD: PAD -->
+        <div class="test-card">
+            <h3>Test 26.4: Spread Method — Pad <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <radialGradient id="rg-pad" cx="50%" cy="50%" r="25%" spreadMethod="pad">
+                        <stop offset="0%" stop-color="#007aff" />
+                        <stop offset="100%" stop-color="#ffcc00" />
+                    </radialGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#rg-pad)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#rg-pad)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#rg-pad)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#rg-pad)" />
+            </svg>
+            <p><strong>Expect:</strong> Central blue→yellow disc; everything past 25% radius clamps to solid yellow.</p>
+        </div>
+
+        <!-- 5. SPREAD: REPEAT -->
+        <div class="test-card">
+            <h3>Test 26.5: Spread Method — Repeat <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <radialGradient id="rg-repeat" cx="50%" cy="50%" r="25%" spreadMethod="repeat">
+                        <stop offset="0%" stop-color="#007aff" />
+                        <stop offset="100%" stop-color="#ffcc00" />
+                    </radialGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#rg-repeat)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#rg-repeat)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#rg-repeat)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#rg-repeat)" />
+            </svg>
+            <p><strong>Expect:</strong> Concentric rings with a hard yellow→blue reset at every 25% interval.</p>
+        </div>
+
+        <!-- 6. GRADIENT TRANSFORM -->
+        <div class="test-card">
+            <h3>Test 26.6: gradientTransform <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <radialGradient id="rg-transform" cx="50%" cy="50%" r="50%" gradientTransform="scale(1 0.6)">
+                        <stop offset="0%" stop-color="#5856d6" />
+                        <stop offset="100%" stop-color="#ff2a68" />
+                    </radialGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#rg-transform)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#rg-transform)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#rg-transform)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#rg-transform)" />
+            </svg>
+            <p><strong>Expect:</strong> The circle squashed into a horizontal ellipse by scale(1 0.6); indigo→pink rings follow.</p>
+        </div>
+
+        <!-- 7. MULTI-STOP + OPACITY -->
+        <div class="test-card">
+            <h3>Test 26.7: Multi-stop &amp; Opacity <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <radialGradient id="rg-multi" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#ff3b30" />
+                        <stop offset="50%" stop-color="#ffcc00" stop-opacity="0.3" />
+                        <stop offset="100%" stop-color="#34c759" />
+                    </radialGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#rg-multi)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#rg-multi)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#rg-multi)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#rg-multi)" />
+            </svg>
+            <p><strong>Expect:</strong> Red core fading through semi-transparent yellow to green edge.</p>
+        </div>
+
+        <!-- 8. SPREAD: REFLECT -->
+        <div class="test-card">
+            <h3>Test 26.8: Spread Method — Reflect <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <radialGradient id="rg-reflect" cx="50%" cy="50%" r="20%" spreadMethod="reflect">
+                        <stop offset="0%" stop-color="#007aff" />
+                        <stop offset="100%" stop-color="#ffcc00" />
+                    </radialGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#rg-reflect)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#rg-reflect)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#rg-reflect)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#rg-reflect)" />
+            </svg>
+            <p><strong>Expect:</strong> Mirrored target-board rings alternating blue↔yellow (reflect is doubly fallback here).</p>
+        </div>
+
+        <!-- 9. COLOR INTERPOLATION: LINEAR RGB -->
+        <div class="test-card">
+            <h3>Test 26.9: color-interpolation=linearRGB <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <radialGradient id="rg-linear-rgb" cx="50%" cy="50%" r="50%" color-interpolation="linearRGB">
+                        <stop offset="0%" stop-color="#007aff" />
+                        <stop offset="100%" stop-color="#34c759" />
+                    </radialGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#rg-linear-rgb)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#rg-linear-rgb)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#rg-linear-rgb)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#rg-linear-rgb)" />
+            </svg>
+            <p><strong>Expect:</strong> Blue→green in linearRGB space (smoother mid-tones than sRGB).</p>
+        </div>
+
+        <!-- 10. OFFSET FOCAL POINT -->
+        <div class="test-card">
+            <h3>Test 26.10: Offset Focal Point (fx/fy) <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <radialGradient id="rg-focal" cx="50%" cy="50%" r="50%" fx="25%" fy="25%">
+                        <stop offset="0%" stop-color="#ffffff" />
+                        <stop offset="30%" stop-color="#ff9500" />
+                        <stop offset="100%" stop-color="#ff3b30" />
+                    </radialGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#rg-focal)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#rg-focal)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#rg-focal)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#rg-focal)" />
+            </svg>
+            <p><strong>Expect:</strong> A white hotspot shifted to the upper-left while the outer rings stay centered.</p>
+        </div>
+
+        <!-- 11. FOCAL RADIUS -->
+        <div class="test-card">
+            <h3>Test 26.11: Focal Radius (fr) <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <radialGradient id="rg-fr" cx="50%" cy="50%" r="50%" fx="50%" fy="50%" fr="15%">
+                        <stop offset="0%" stop-color="#af52de" />
+                        <stop offset="100%" stop-color="#007aff" />
+                    </radialGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#rg-fr)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#rg-fr)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#rg-fr)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#rg-fr)" />
+            </svg>
+            <p><strong>Expect:</strong> A solid purple core disk spanning 15% before blue interpolation begins.</p>
+        </div>
+
+    </div>
+
+</body>
+</html>

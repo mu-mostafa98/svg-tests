@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Engine Test: 23_basic_shapes_linear_gradient.html</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            border-bottom: 2px solid #d2d2d7;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            margin: 30px 0 12px 0;
+            padding: 8px 14px;
+            font-size: 16px;
+            border-radius: 6px;
+        }
+        h2.native {
+            background: #e7f6ec;
+            color: #1a7f37;
+            border: 1px solid #b6e2c3;
+        }
+        h2.fallback {
+            background: #fdeceb;
+            color: #c62828;
+            border: 1px solid #f5c6c2;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .test-card {
+            background: #ffffff;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .test-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            width: 100%;
+            text-align: left;
+            color: #86868b;
+        }
+        .test-card p {
+            margin: 8px 0 0 0;
+            font-size: 12px;
+            color: #515154;
+            width: 100%;
+            line-height: 1.4;
+        }
+        .badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+        .badge.native {
+            background: #1a7f37;
+            color: #ffffff;
+        }
+        .badge.fallback {
+            background: #c62828;
+            color: #ffffff;
+        }
+        svg {
+            background-color: #fafafa;
+            border: 1px dashed #bcbcf2;
+            width: 200px;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>SVG Engine Test Suite: Basic Shapes — Linear Gradients (Native vs Fallback)</h1>
+    <p style="max-width: 720px; color:#515154; line-height:1.5;">
+        Each card renders the same linear-gradient feature on all three <strong>basic shapes</strong>
+        (rect, circle, ellipse) that the SVG engine can render as a <strong>native WebRender gradient</strong>.
+        Part 1 lists features that <strong>are</strong> native-eligible; Part 2 lists features that
+        <strong>fall back</strong> to CPU rasterization (vello).
+    </p>
+
+    <h2 class="native">Part 1 — Linear gradient features that CAN be native (WebRender)</h2>
+    <div class="grid">
+
+        <!-- 1. DEFAULT HORIZONTAL -->
+        <div class="test-card">
+            <h3>Test 23.1: Default Horizontal <span class="badge native">Native</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-default" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="#007aff" />
+                        <stop offset="100%" stop-color="#34c759" />
+                    </linearGradient>
+                </defs>
+                <rect x="5" y="8" width="90" height="22" fill="url(#lg-default)" />
+                <circle cx="50" cy="50" r="16" fill="url(#lg-default)" />
+                <ellipse cx="50" cy="82" rx="42" ry="12" fill="url(#lg-default)" />
+            </svg>
+            <p><strong>Expect:</strong> All three shapes blend left-to-right from blue to green. Omitting x1/y1/x2/y2 must resolve to the default horizontal vector.</p>
+        </div>
+
+        <!-- 2. VERTICAL (AXIS-ALIGNED) -->
+        <div class="test-card">
+            <h3>Test 23.2: Vertical (Axis-Aligned) <span class="badge native">Native</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-vertical" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#ff3b30" />
+                        <stop offset="100%" stop-color="#ff9500" />
+                    </linearGradient>
+                </defs>
+                <rect x="5" y="8" width="90" height="22" fill="url(#lg-vertical)" />
+                <circle cx="50" cy="50" r="16" fill="url(#lg-vertical)" />
+                <ellipse cx="50" cy="82" rx="42" ry="12" fill="url(#lg-vertical)" />
+            </svg>
+            <p><strong>Expect:</strong> All three shapes blend top-to-bottom from red to orange. A perfectly axis-aligned vector renders natively.</p>
+        </div>
+
+        <!-- 3. DIAGONAL -->
+        <div class="test-card">
+            <h3>Test 23.3: Diagonal <span class="badge native">Native</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-diagonal" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#af52de" />
+                        <stop offset="100%" stop-color="#5ac8fa" />
+                    </linearGradient>
+                </defs>
+                <rect x="5" y="8" width="90" height="22" fill="url(#lg-diagonal)" />
+                <circle cx="50" cy="50" r="16" fill="url(#lg-diagonal)" />
+                <ellipse cx="50" cy="82" rx="42" ry="12" fill="url(#lg-diagonal)" />
+            </svg>
+            <p><strong>Expect:</strong> All three shapes blend diagonally from top-left (purple) to bottom-right (light blue).</p>
+            <p><strong>Note (known bug):</strong> diagonal linear gradients are native-eligible, but WebRender's cached (Indirect) path currently renders them vertical.</p>
+        </div>
+
+        <!-- 4. MULTIPLE COLOR STOPS -->
+        <div class="test-card">
+            <h3>Test 23.4: Multiple Color Stops <span class="badge native">Native</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-multi" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="#ff3b30" />
+                        <stop offset="33%" stop-color="#ffcc00" />
+                        <stop offset="66%" stop-color="#34c759" />
+                        <stop offset="100%" stop-color="#007aff" />
+                    </linearGradient>
+                </defs>
+                <rect x="5" y="8" width="90" height="22" fill="url(#lg-multi)" />
+                <circle cx="50" cy="50" r="16" fill="url(#lg-multi)" />
+                <ellipse cx="50" cy="82" rx="42" ry="12" fill="url(#lg-multi)" />
+            </svg>
+            <p><strong>Expect:</strong> Four-band progression left-to-right: red, yellow, green, blue. Any number of stops maps to native WebRender stops.</p>
+        </div>
+
+        <!-- 5. STOP OPACITY -->
+        <div class="test-card">
+            <h3>Test 23.5: Stop Opacity <span class="badge native">Native</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-opacity" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="#1d1d1f" stop-opacity="1" />
+                        <stop offset="50%" stop-color="#1d1d1f" stop-opacity="0.1" />
+                        <stop offset="100%" stop-color="#1d1d1f" stop-opacity="1" />
+                    </linearGradient>
+                </defs>
+                <rect x="5" y="8" width="90" height="22" fill="url(#lg-opacity)" />
+                <circle cx="50" cy="50" r="16" fill="url(#lg-opacity)" />
+                <ellipse cx="50" cy="82" rx="42" ry="12" fill="url(#lg-opacity)" />
+            </svg>
+            <p><strong>Expect:</strong> Dark overlay solid at the edges, fading to near-transparent in the center. Per-stop alpha is folded into the native stop color.</p>
+        </div>
+
+        <!-- 6. SPREAD: PAD -->
+        <div class="test-card">
+            <h3>Test 23.6: Spread Method — Pad <span class="badge native">Native</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-pad" x1="30%" y1="0%" x2="70%" y2="0%" spreadMethod="pad">
+                        <stop offset="0%" stop-color="#007aff" />
+                        <stop offset="100%" stop-color="#ffcc00" />
+                    </linearGradient>
+                </defs>
+                <rect x="5" y="8" width="90" height="22" fill="url(#lg-pad)" />
+                <circle cx="50" cy="50" r="16" fill="url(#lg-pad)" />
+                <ellipse cx="50" cy="82" rx="42" ry="12" fill="url(#lg-pad)" />
+            </svg>
+            <p><strong>Expect:</strong> Blend runs between 30% and 70%; areas outside are clamped to solid blue / solid yellow. Maps to native ExtendMode::Clamp.</p>
+        </div>
+
+        <!-- 7. SPREAD: REPEAT -->
+        <div class="test-card">
+            <h3>Test 23.7: Spread Method — Repeat <span class="badge native">Native</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-repeat" x1="40%" y1="0%" x2="60%" y2="0%" spreadMethod="repeat">
+                        <stop offset="0%" stop-color="#af52de" />
+                        <stop offset="100%" stop-color="#34c759" />
+                    </linearGradient>
+                </defs>
+                <rect x="5" y="8" width="90" height="22" fill="url(#lg-repeat)" />
+                <circle cx="50" cy="50" r="16" fill="url(#lg-repeat)" />
+                <ellipse cx="50" cy="82" rx="42" ry="12" fill="url(#lg-repeat)" />
+            </svg>
+            <p><strong>Expect:</strong> Sawtooth repeating bands: green resets sharply to purple at each 20%-interval boundary. Maps to native ExtendMode::Repeat.</p>
+        </div>
+
+        <!-- 8. GRADIENT UNITS: OBJECT BOUNDING BOX -->
+        <div class="test-card">
+            <h3>Test 23.8: Units — objectBoundingBox <span class="badge native">Native</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-bbox" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">
+                        <stop offset="0%" stop-color="#007aff" />
+                        <stop offset="100%" stop-color="#ff9500" />
+                    </linearGradient>
+                </defs>
+                <rect x="5" y="8" width="90" height="22" fill="url(#lg-bbox)" />
+                <circle cx="50" cy="50" r="16" fill="url(#lg-bbox)" />
+                <ellipse cx="50" cy="82" rx="42" ry="12" fill="url(#lg-bbox)" />
+            </svg>
+            <p><strong>Expect:</strong> Each shape's own bounding box is the gradient space — all three run blue→orange across their own width.</p>
+        </div>
+
+        <!-- 9. GRADIENT UNITS: USER SPACE ON USE -->
+        <div class="test-card">
+            <h3>Test 23.9: Units — userSpaceOnUse <span class="badge native">Native</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-user" x1="5" y1="0" x2="95" y2="0" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#007aff" />
+                        <stop offset="100%" stop-color="#ff9500" />
+                    </linearGradient>
+                </defs>
+                <rect x="5" y="8" width="90" height="22" fill="url(#lg-user)" />
+                <circle cx="50" cy="50" r="16" fill="url(#lg-user)" />
+                <ellipse cx="50" cy="82" rx="42" ry="12" fill="url(#lg-user)" />
+            </svg>
+            <p><strong>Expect:</strong> One shared coordinate space across the whole 100×100 canvas — every shape shows the same blue→orange window.</p>
+        </div>
+
+        <!-- 10. GRADIENT TRANSFORM -->
+        <div class="test-card">
+            <h3>Test 23.10: gradientTransform <span class="badge native">Native</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-transform" x1="0" y1="0" x2="1" y2="0" gradientTransform="rotate(30 0.5 0.5)">
+                        <stop offset="0%" stop-color="#5856d6" />
+                        <stop offset="100%" stop-color="#ff2a68" />
+                    </linearGradient>
+                </defs>
+                <rect x="5" y="8" width="90" height="22" fill="url(#lg-transform)" />
+                <circle cx="50" cy="50" r="16" fill="url(#lg-transform)" />
+                <ellipse cx="50" cy="82" rx="42" ry="12" fill="url(#lg-transform)" />
+            </svg>
+            <p><strong>Expect:</strong> The horizontal vector is rotated 30° about each shape's center, producing a tilted indigo→pink blend. The transform is folded into the native endpoints.</p>
+        </div>
+
+    </div>
+
+    <h2 class="fallback">Part 2 — Linear gradient features that CANNOT be native (fallback to vello)</h2>
+    <div class="grid">
+
+        <!-- 11. SPREAD: REFLECT -->
+        <div class="test-card">
+            <h3>Test 23.11: Spread Method — Reflect <span class="badge fallback">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-reflect" x1="40%" y1="0%" x2="60%" y2="0%" spreadMethod="reflect">
+                        <stop offset="0%" stop-color="#af52de" />
+                        <stop offset="100%" stop-color="#34c759" />
+                    </linearGradient>
+                </defs>
+                <rect x="5" y="8" width="90" height="22" fill="url(#lg-reflect)" />
+                <circle cx="50" cy="50" r="16" fill="url(#lg-reflect)" />
+                <ellipse cx="50" cy="82" rx="42" ry="12" fill="url(#lg-reflect)" />
+            </svg>
+            <p><strong>Expect:</strong> Mirrored ribbons alternating green↔purple. WebRender has no ExtendMode::Reflect, so this rasterizes on the CPU (vello).</p>
+        </div>
+
+        <!-- 12. COLOR INTERPOLATION: LINEAR RGB -->
+        <div class="test-card">
+            <h3>Test 23.12: color-interpolation=linearRGB <span class="badge fallback">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-linear-rgb" x1="0" y1="0" x2="1" y2="0" color-interpolation="linearRGB">
+                        <stop offset="0%" stop-color="#007aff" />
+                        <stop offset="100%" stop-color="#34c759" />
+                    </linearGradient>
+                </defs>
+                <rect x="5" y="8" width="90" height="22" fill="url(#lg-linear-rgb)" />
+                <circle cx="50" cy="50" r="16" fill="url(#lg-linear-rgb)" />
+                <ellipse cx="50" cy="82" rx="42" ry="12" fill="url(#lg-linear-rgb)" />
+            </svg>
+            <p><strong>Expect:</strong> Blue→green but interpolated in linearRGB (physically smoother mid-tones). WebRender interpolates sRGB only, so this falls back to vello.</p>
+        </div>
+
+    </div>
+
+</body>
+</html>

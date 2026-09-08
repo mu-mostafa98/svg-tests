@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Engine Test: 24_complex_shapes_linear_gradient.html</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            border-bottom: 2px solid #d2d2d7;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            margin: 30px 0 12px 0;
+            padding: 8px 14px;
+            font-size: 16px;
+            border-radius: 6px;
+            background: #fdeceb;
+            color: #c62828;
+            border: 1px solid #f5c6c2;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .test-card {
+            background: #ffffff;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .test-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            width: 100%;
+            text-align: left;
+            color: #86868b;
+        }
+        .test-card p {
+            margin: 8px 0 0 0;
+            font-size: 12px;
+            color: #515154;
+            width: 100%;
+            line-height: 1.4;
+        }
+        .badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 6px;
+            vertical-align: middle;
+            background: #c62828;
+            color: #ffffff;
+        }
+        svg {
+            background-color: #fafafa;
+            border: 1px dashed #bcbcf2;
+            width: 200px;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>SVG Engine Test Suite: Complex Shapes — Linear Gradients (all fallback to vello)</h1>
+    <p style="max-width: 720px; color:#515154; line-height:1.5;">
+        Each card renders the same linear-gradient feature on all four <strong>complex shapes</strong>
+        (line, polygon, polyline, path). None of these shapes is native-gradient capable — the engine
+        can only emit a native gradient inside a rect/circle/ellipse, so <strong>every</strong> case
+        here rasterizes on the CPU (vello). The feature set mirrors
+        <code>23_basic_shapes_linear_gradient.html</code> so testers can compare native vs fallback
+        rendering of the identical gradient.
+    </p>
+
+    <h2>All features fall back to vello (complex shapes have no native gradient path)</h2>
+    <div class="grid">
+
+        <!-- 1. DEFAULT HORIZONTAL -->
+        <div class="test-card">
+            <h3>Test 24.1: Default Horizontal <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-default" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="#007aff" />
+                        <stop offset="100%" stop-color="#34c759" />
+                    </linearGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#lg-default)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#lg-default)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#lg-default)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#lg-default)" />
+            </svg>
+            <p><strong>Expect:</strong> Every shape blends left-to-right from blue to green (line and polyline via stroke; polygon and path via fill).</p>
+        </div>
+
+        <!-- 2. VERTICAL -->
+        <div class="test-card">
+            <h3>Test 24.2: Vertical (Axis-Aligned) <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-vertical" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#ff3b30" />
+                        <stop offset="100%" stop-color="#ff9500" />
+                    </linearGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#lg-vertical)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#lg-vertical)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#lg-vertical)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#lg-vertical)" />
+            </svg>
+            <p><strong>Expect:</strong> Top-to-bottom red→orange blends. Axis-aligned is still vello here — the shape (not the vector) is what excludes native.</p>
+        </div>
+
+        <!-- 3. DIAGONAL -->
+        <div class="test-card">
+            <h3>Test 24.3: Diagonal <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-diagonal" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#af52de" />
+                        <stop offset="100%" stop-color="#5ac8fa" />
+                    </linearGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#lg-diagonal)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#lg-diagonal)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#lg-diagonal)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#lg-diagonal)" />
+            </svg>
+            <p><strong>Expect:</strong> Diagonal top-left (purple) → bottom-right (light blue). vello renders diagonal gradients correctly.</p>
+        </div>
+
+        <!-- 4. MULTIPLE COLOR STOPS -->
+        <div class="test-card">
+            <h3>Test 24.4: Multiple Color Stops <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-multi" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="#ff3b30" />
+                        <stop offset="33%" stop-color="#ffcc00" />
+                        <stop offset="66%" stop-color="#34c759" />
+                        <stop offset="100%" stop-color="#007aff" />
+                    </linearGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#lg-multi)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#lg-multi)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#lg-multi)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#lg-multi)" />
+            </svg>
+            <p><strong>Expect:</strong> Four-band red/yellow/green/blue progression across every shape.</p>
+        </div>
+
+        <!-- 5. STOP OPACITY -->
+        <div class="test-card">
+            <h3>Test 24.5: Stop Opacity <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-opacity" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="#1d1d1f" stop-opacity="1" />
+                        <stop offset="50%" stop-color="#1d1d1f" stop-opacity="0.1" />
+                        <stop offset="100%" stop-color="#1d1d1f" stop-opacity="1" />
+                    </linearGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#lg-opacity)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#lg-opacity)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#lg-opacity)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#lg-opacity)" />
+            </svg>
+            <p><strong>Expect:</strong> Dark edges fading to near-transparent centers, so the dashed svg border shows through the middle of each shape.</p>
+        </div>
+
+        <!-- 6. SPREAD: PAD -->
+        <div class="test-card">
+            <h3>Test 24.6: Spread Method — Pad <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-pad" x1="30%" y1="0%" x2="70%" y2="0%" spreadMethod="pad">
+                        <stop offset="0%" stop-color="#007aff" />
+                        <stop offset="100%" stop-color="#ffcc00" />
+                    </linearGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#lg-pad)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#lg-pad)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#lg-pad)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#lg-pad)" />
+            </svg>
+            <p><strong>Expect:</strong> Blend between 30%–70%, clamped to solid blue / solid yellow outside that band.</p>
+        </div>
+
+        <!-- 7. SPREAD: REPEAT -->
+        <div class="test-card">
+            <h3>Test 24.7: Spread Method — Repeat <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-repeat" x1="40%" y1="0%" x2="60%" y2="0%" spreadMethod="repeat">
+                        <stop offset="0%" stop-color="#af52de" />
+                        <stop offset="100%" stop-color="#34c759" />
+                    </linearGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#lg-repeat)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#lg-repeat)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#lg-repeat)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#lg-repeat)" />
+            </svg>
+            <p><strong>Expect:</strong> Sawtooth repeating bands with hard green→purple seams every 20% interval.</p>
+        </div>
+
+        <!-- 8. GRADIENT UNITS: OBJECT BOUNDING BOX -->
+        <div class="test-card">
+            <h3>Test 24.8: Units — objectBoundingBox <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-bbox" x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">
+                        <stop offset="0%" stop-color="#007aff" />
+                        <stop offset="100%" stop-color="#ff9500" />
+                    </linearGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#lg-bbox)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#lg-bbox)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#lg-bbox)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#lg-bbox)" />
+            </svg>
+            <p><strong>Expect:</strong> Each shape's own bounding box drives its blue→orange gradient.</p>
+        </div>
+
+        <!-- 9. GRADIENT UNITS: USER SPACE ON USE -->
+        <div class="test-card">
+            <h3>Test 24.9: Units — userSpaceOnUse <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-user" x1="5" y1="0" x2="95" y2="0" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stop-color="#007aff" />
+                        <stop offset="100%" stop-color="#ff9500" />
+                    </linearGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#lg-user)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#lg-user)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#lg-user)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#lg-user)" />
+            </svg>
+            <p><strong>Expect:</strong> One shared coordinate space — every shape shows the same full-width blue→orange window.</p>
+        </div>
+
+        <!-- 10. GRADIENT TRANSFORM -->
+        <div class="test-card">
+            <h3>Test 24.10: gradientTransform <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-transform" x1="0" y1="0" x2="1" y2="0" gradientTransform="rotate(30 0.5 0.5)">
+                        <stop offset="0%" stop-color="#5856d6" />
+                        <stop offset="100%" stop-color="#ff2a68" />
+                    </linearGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#lg-transform)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#lg-transform)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#lg-transform)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#lg-transform)" />
+            </svg>
+            <p><strong>Expect:</strong> A 30°-rotated indigo→pink blend across each shape.</p>
+        </div>
+
+        <!-- 11. SPREAD: REFLECT -->
+        <div class="test-card">
+            <h3>Test 24.11: Spread Method — Reflect <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-reflect" x1="40%" y1="0%" x2="60%" y2="0%" spreadMethod="reflect">
+                        <stop offset="0%" stop-color="#af52de" />
+                        <stop offset="100%" stop-color="#34c759" />
+                    </linearGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#lg-reflect)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#lg-reflect)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#lg-reflect)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#lg-reflect)" />
+            </svg>
+            <p><strong>Expect:</strong> Mirrored green↔purple ribbons (reflect is unsupported natively too, so it is doubly fallback).</p>
+        </div>
+
+        <!-- 12. COLOR INTERPOLATION: LINEAR RGB -->
+        <div class="test-card">
+            <h3>Test 24.12: color-interpolation=linearRGB <span class="badge">Fallback</span></h3>
+            <svg viewBox="0 0 100 100">
+                <defs>
+                    <linearGradient id="lg-linear-rgb" x1="0" y1="0" x2="1" y2="0" color-interpolation="linearRGB">
+                        <stop offset="0%" stop-color="#007aff" />
+                        <stop offset="100%" stop-color="#34c759" />
+                    </linearGradient>
+                </defs>
+                <line x1="5" y1="12" x2="95" y2="12" stroke="url(#lg-linear-rgb)" stroke-width="6" />
+                <polygon points="12,26 88,26 70,52 30,52" fill="url(#lg-linear-rgb)" />
+                <polyline points="10,66 30,58 50,74 70,60 90,72" fill="none" stroke="url(#lg-linear-rgb)" stroke-width="5" />
+                <path d="M 12 90 C 30 80, 70 80, 88 90 Z" fill="url(#lg-linear-rgb)" />
+            </svg>
+            <p><strong>Expect:</strong> Blue→green interpolated in linearRGB (smoother mid-tones than sRGB).</p>
+        </div>
+
+    </div>
+
+</body>
+</html>
