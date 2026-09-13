@@ -192,6 +192,29 @@
             <p>Tests multi-stage filter pipelines combining <code>&lt;feOffset&gt;</code>, <code>&lt;feGaussianBlur&gt;</code>, <code>&lt;feColorMatrix&gt;</code>, and <code>&lt;feBlend&gt;</code>.</p>
         </div>
 
+        <!-- Card 5: Filter Applied Directly on <text> -->
+        <div class="test-card">
+            <h3>5. Filter Directly on &lt;text&gt; (&lt;feGaussianBlur&gt;)</h3>
+            <svg width="350" height="100" viewBox="0 0 350 100">
+                <defs>
+                    <filter id="text-blur" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="3"/>
+                    </filter>
+                </defs>
+
+                <!-- Control: unfiltered text -->
+                <text x="15" y="40" font-size="28" fill="#crimson">Blur</text>
+
+                <!-- Filter applied directly on the <text> element (not a wrapper <g>) -->
+                <text x="15" y="85" font-size="28" fill="#crimson" filter="url(#text-blur)">Blur</text>
+
+                <!-- Reference: filter on a <rect> for comparison -->
+                <rect x="130" y="12" width="80" height="40" fill="steelblue"/>
+                <rect x="130" y="57" width="80" height="40" fill="steelblue" filter="url(#text-blur)"/>
+            </svg>
+            <p>Tests <code>filter</code> applied <em>directly</em> on a <code>&lt;text&gt;</code> element (top vs bottom), contrasted with the same filter on a <code>&lt;rect&gt;</code>. ServoShell should blur both; if text is sharp but the rect is blurred, the engine drops the text filter.</p>
+        </div>
+
     </div>
 
 </body>
