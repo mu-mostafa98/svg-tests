@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SVG Elements Reference</title>
+  <style>
+    body { font-family: sans-serif; background: #f4f4f9; padding: 20px; }
+    .example { background: white; border: 1px solid #ccc; margin-bottom: 20px; padding: 10px; border-radius: 6px; }
+    h3 { margin-top: 0; color: #333; }
+    svg { background: #fafafa; border: 1px dashed #aaa; display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- 1. rect -->
+  <div class="example">
+    <h3>1. &lt;rect&gt;</h3>
+    <svg width="100" height="100">
+      <rect x="10" y="10" width="80" height="80" fill="skyblue" />
+    </svg>
+  </div>
+
+  <!-- 2. circle -->
+  <div class="example">
+    <h3>2. &lt;circle&gt;</h3>
+    <svg width="100" height="100">
+      <circle cx="50" cy="50" r="40" fill="coral" />
+    </svg>
+  </div>
+
+  <!-- 3. ellipse -->
+  <div class="example">
+    <h3>3. &lt;ellipse&gt;</h3>
+    <svg width="100" height="100">
+      <ellipse cx="50" cy="50" rx="40" ry="25" fill="mediumpurple" />
+    </svg>
+  </div>
+
+  <!-- 4. line -->
+  <div class="example">
+    <h3>4. &lt;line&gt;</h3>
+    <svg width="100" height="100">
+      <line x1="10" y1="10" x2="90" y2="90" stroke="black" stroke-width="4" />
+    </svg>
+  </div>
+
+  <!-- 5. polyline -->
+  <div class="example">
+    <h3>5. &lt;polyline&gt;</h3>
+    <svg width="100" height="100">
+      <polyline points="10,80 30,20 50,60 70,10 90,90" fill="none" stroke="crimson" stroke-width="4" />
+    </svg>
+  </div>
+
+  <!-- 6. polygon -->
+  <div class="example">
+    <h3>6. &lt;polygon&gt;</h3>
+    <svg width="100" height="100">
+      <polygon points="50,10 90,90 10,90" fill="gold" stroke="orange" stroke-width="2" />
+    </svg>
+  </div>
+
+  <!-- 7. path -->
+  <div class="example">
+    <h3>7. &lt;path&gt;</h3>
+    <svg width="100" height="100">
+      <path d="M 10 80 Q 52.5 10 95 80 Z" fill="teal" />
+    </svg>
+  </div>
+
+  <!-- 8. text -->
+  <div class="example">
+    <h3>8. &lt;text&gt;</h3>
+    <svg width="150" height="50">
+      <text x="10" y="30" font-size="20" fill="darkblue">Hello SVG</text>
+    </svg>
+  </div>
+
+  <!-- 9. tspan -->
+  <div class="example">
+    <h3>9. &lt;tspan&gt;</h3>
+    <svg width="200" height="50">
+      <text x="10" y="30" font-size="18">
+        Base <tspan fill="red" font-weight="bold">tspan</tspan> Text
+      </text>
+    </svg>
+  </div>
+
+  <!-- 10. textPath -->
+  <div class="example">
+    <h3>10. &lt;textPath&gt;</h3>
+    <svg width="200" height="80">
+      <path id="curve" d="M 10 60 Q 100 0 190 60" fill="none" />
+      <text>
+        <textPath href="#curve">Text following a path</textPath>
+      </text>
+    </svg>
+  </div>
+
+  <!-- 11. g -->
+  <div class="example">
+    <h3>11. &lt;g&gt;</h3>
+    <svg width="100" height="100">
+      <g fill="orangered" stroke="black" stroke-width="2">
+        <rect x="10" y="10" width="30" height="30" />
+        <circle cx="65" cy="65" r="20" />
+      </g>
+    </svg>
+  </div>
+
+  <!-- 12. defs -->
+  <div class="example">
+    <h3>12. &lt;defs&gt;</h3>
+    <svg width="100" height="100">
+      <defs>
+        <rect id="my-rect" width="40" height="40" fill="limegreen" />
+      </defs>
+      <use href="#my-rect" x="10" y="10" />
+    </svg>
+  </div>
+
+  <!-- 13. use -->
+  <div class="example">
+    <h3>13. &lt;use&gt;</h3>
+    <svg width="150" height="60">
+      <rect id="box" width="40" height="40" fill="indigo" />
+      <use href="#box" x="50" y="10" />
+      <use href="#box" x="100" y="10" fill="violet" />
+    </svg>
+  </div>
+
+  <!-- 14. symbol -->
+  <div class="example">
+    <h3>14. &lt;symbol&gt;</h3>
+    <svg width="100" height="100">
+      <symbol id="star" viewBox="0 0 20 20">
+        <polygon points="10,0 13,7 20,7 15,12 17,19 10,15 3,19 5,12 0,7 7,7" fill="gold" />
+      </symbol>
+      <use href="#star" x="10" y="10" width="80" height="80" />
+    </svg>
+  </div>
+
+  <!-- 15. linearGradient & 16. stop -->
+  <div class="example">
+    <h3>15. &lt;linearGradient&gt; &amp; 16. &lt;stop&gt;</h3>
+    <svg width="100" height="100">
+      <defs>
+        <linearGradient id="lin-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="yellow" />
+          <stop offset="100%" stop-color="red" />
+        </linearGradient>
+      </defs>
+      <rect width="100" height="100" fill="url(#lin-grad)" />
+    </svg>
+  </div>
+
+  <!-- 17. radialGradient -->
+  <div class="example">
+    <h3>17. &lt;radialGradient&gt;</h3>
+    <svg width="100" height="100">
+      <defs>
+        <radialGradient id="rad-grad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="white" />
+          <stop offset="100%" stop-color="blue" />
+        </radialGradient>
+      </defs>
+      <circle cx="50" cy="50" r="50" fill="url(#rad-grad)" />
+    </svg>
+  </div>
+
+  <!-- 18. pattern -->
+  <div class="example">
+    <h3>18. &lt;pattern&gt;</h3>
+    <svg width="100" height="100">
+      <defs>
+        <pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <circle cx="10" cy="10" r="5" fill="magenta" />
+        </pattern>
+      </defs>
+      <rect width="100" height="100" fill="url(#dots)" />
+    </svg>
+  </div>
+
+  <!-- 19. clipPath -->
+  <div class="example">
+    <h3>19. &lt;clipPath&gt;</h3>
+    <svg width="100" height="100">
+      <defs>
+        <clipPath id="my-clip">
+          <circle cx="50" cy="50" r="40" />
+        </clipPath>
+      </defs>
+      <rect width="100" height="100" fill="darkorange" clip-path="url(#my-clip)" />
+    </svg>
+  </div>
+
+  <!-- 20. mask -->
+  <div class="example">
+    <h3>20. &lt;mask&gt;</h3>
+    <svg width="100" height="100">
+      <defs>
+        <mask id="my-mask">
+          <!-- White areas are kept, black areas are hidden -->
+          <rect width="100" height="100" fill="white" />
+          <circle cx="50" cy="50" r="30" fill="black" />
+        </mask>
+      </defs>
+      <rect width="100" height="100" fill="purple" mask="url(#my-mask)" />
+    </svg>
+  </div>
+
+  <!-- 21. marker -->
+  <div class="example">
+    <h3>21. &lt;marker&gt;</h3>
+    <svg width="150" height="50">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="black" />
+        </marker>
+      </defs>
+      <line x1="10" y1="25" x2="120" y2="25" stroke="black" stroke-width="3" marker-end="url(#arrow)" />
+    </svg>
+  </div>
+
+  <!-- 22. filter -->
+  <div class="example">
+    <h3>22. &lt;filter&gt;</h3>
+    <svg width="100" height="100">
+      <defs>
+        <filter id="empty-filter">
+          <!-- Filter container definition -->
+        </filter>
+      </defs>
+      <rect width="80" height="80" x="10" y="10" fill="gray" filter="url(#empty-filter)" />
+    </svg>
+  </div>
+
+  <!-- 23. feGaussianBlur -->
+  <div class="example">
+    <h3>23. &lt;feGaussianBlur&gt;</h3>
+    <svg width="100" height="100">
+      <defs>
+        <filter id="blur">
+          <feGaussianBlur stdDeviation="4" />
+        </filter>
+      </defs>
+      <circle cx="50" cy="50" r="30" fill="crimson" filter="url(#blur)" />
+    </svg>
+  </div>
+
+  <!-- 24. feDropShadow -->
+  <div class="example">
+    <h3>24. &lt;feDropShadow&gt;</h3>
+    <svg width="100" height="100">
+      <defs>
+        <filter id="shadow">
+          <feDropShadow dx="4" dy="4" stdDeviation="3" flood-color="black" />
+        </filter>
+      </defs>
+      <rect x="15" y="15" width="60" height="60" fill="mediumseagreen" filter="url(#shadow)" />
+    </svg>
+  </div>
+
+  <!-- 25. title -->
+  <div class="example">
+    <h3>25. &lt;title&gt;</h3>
+    <svg width="100" height="100">
+      <rect x="10" y="10" width="80" height="80" fill="royalblue">
+        <title>Hover text: This is a Title!</title>
+      </rect>
+    </svg>
+  </div>
+
+  <!-- 26. desc -->
+  <div class="example">
+    <h3>26. &lt;desc&gt;</h3>
+    <svg width="100" height="100">
+      <rect x="10" y="10" width="80" height="80" fill="darkslategray">
+        <desc>Accessible Description: This element represents a square shape for screen readers.</desc>
+      </rect>
+    </svg>
+  </div>
+
+</body>
+</html>

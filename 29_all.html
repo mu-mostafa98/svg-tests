@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Elements Examples</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .card h3 {
+            margin-top: 0;
+            color: #333;
+            font-size: 16px;
+        }
+        svg {
+            border: 1px dashed #ccc;
+            background-color: #fafafa;
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>SVG Elements Showcase (One Focus Element Per Example)</h1>
+
+    <div class="grid">
+
+        <!-- 1. rect -->
+        <div class="card">
+            <h3>&lt;rect&gt;</h3>
+            <svg width="150" height="150">
+                <rect x="25" y="25" width="100" height="100" rx="15" fill="#3498db" />
+            </svg>
+        </div>
+
+        <!-- 2. circle -->
+        <div class="card">
+            <h3>&lt;circle&gt;</h3>
+            <svg width="150" height="150">
+                <circle cx="75" cy="75" r="50" fill="#e74c3c" />
+            </svg>
+        </div>
+
+        <!-- 3. ellipse -->
+        <div class="card">
+            <h3>&lt;ellipse&gt;</h3>
+            <svg width="150" height="150">
+                <ellipse cx="75" cy="75" rx="60" ry="35" fill="#2ecc71" />
+            </svg>
+        </div>
+
+        <!-- 4. line -->
+        <div class="card">
+            <h3>&lt;line&gt;</h3>
+            <svg width="150" height="150">
+                <line x1="20" y1="20" x2="130" y2="130" stroke="#9b59b6" stroke-width="8" stroke-linecap="round" />
+            </svg>
+        </div>
+
+        <!-- 5. polyline -->
+        <div class="card">
+            <h3>&lt;polyline&gt;</h3>
+            <svg width="150" height="150">
+                <polyline points="20,120 50,40 80,90 110,20 130,80" fill="none" stroke="#e67e22" stroke-width="6" />
+            </svg>
+        </div>
+
+        <!-- 6. polygon -->
+        <div class="card">
+            <h3>&lt;polygon&gt;</h3>
+            <svg width="150" height="150">
+                <polygon points="75,20 130,130 20,130" fill="#f1c40f" />
+            </svg>
+        </div>
+
+        <!-- 7. path -->
+        <div class="card">
+            <h3>&lt;path&gt;</h3>
+            <svg width="150" height="150">
+                <path d="M 75,20 Q 140,75 75,130 Q 10,75 75,20 Z" fill="#1abc9c" />
+            </svg>
+        </div>
+
+        <!-- 8. text -->
+        <div class="card">
+            <h3>&lt;text&gt;</h3>
+            <svg width="150" height="150">
+                <text x="75" y="85" font-size="28" text-anchor="middle" fill="#34495e" font-weight="bold">Hello</text>
+            </svg>
+        </div>
+
+        <!-- 9. tspan -->
+        <div class="card">
+            <h3>&lt;tspan&gt;</h3>
+            <svg width="150" height="150">
+                <text x="20" y="80" font-size="20">
+                    SVG <tspan fill="#e74c3c" font-weight="bold" dy="-10">tspan</tspan>
+                </text>
+            </svg>
+        </div>
+
+        <!-- 10. textPath -->
+        <div class="card">
+            <h3>&lt;textPath&gt;</h3>
+            <svg width="150" height="150">
+                <path id="curve" d="M 20,100 Q 75,20 130,100" fill="none" />
+                <text font-size="14" fill="#8e44ad">
+                    <textPath href="#curve">Curved text example</textPath>
+                </text>
+            </svg>
+        </div>
+
+        <!-- 11. g -->
+        <div class="card">
+            <h3>&lt;g&gt; (Group)</h3>
+            <svg width="150" height="150">
+                <g fill="#e67e22" stroke="#d35400" stroke-width="4">
+                    <rect x="20" y="40" width="50" height="50" />
+                    <circle cx="110" cy="65" r="25" />
+                </g>
+            </svg>
+        </div>
+
+        <!-- 12. defs & use -->
+        <div class="card">
+            <h3>&lt;defs&gt; & &lt;use&gt;</h3>
+            <svg width="150" height="150">
+                <defs>
+                    <circle id="my-circle" r="25" fill="#3498db" />
+                </defs>
+                <use href="#my-circle" x="50" y="50" />
+                <use href="#my-circle" x="100" y="100" />
+            </svg>
+        </div>
+
+        <!-- 13. symbol -->
+        <div class="card">
+            <h3>&lt;symbol&gt;</h3>
+            <svg width="150" height="150">
+                <symbol id="star" viewBox="0 0 24 24">
+                    <polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9" fill="#f39c12"/>
+                </symbol>
+                <use href="#star" x="25" y="25" width="100" height="100" />
+            </svg>
+        </div>
+
+        <!-- 14. clipPath -->
+        <div class="card">
+            <h3>&lt;clipPath&gt;</h3>
+            <svg width="150" height="150">
+                <clipPath id="my-clip">
+                    <circle cx="75" cy="75" r="40" />
+                </clipPath>
+                <rect x="20" y="20" width="110" height="110" fill="#e74c3c" clip-path="url(#my-clip)" />
+            </svg>
+        </div>
+
+        <!-- 15. mask -->
+        <div class="card">
+            <h3>&lt;mask&gt;</h3>
+            <svg width="150" height="150">
+                <mask id="my-mask">
+                    <rect x="0" y="0" width="150" height="150" fill="white" />
+                    <circle cx="75" cy="75" r="30" fill="black" />
+                </mask>
+                <rect x="25" y="25" width="100" height="100" fill="#9b59b6" mask="url(#my-mask)" />
+            </svg>
+        </div>
+
+        <!-- 16. pattern -->
+        <div class="card">
+            <h3>&lt;pattern&gt;</h3>
+            <svg width="150" height="150">
+                <pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                    <circle cx="10" cy="10" r="4" fill="#34495e" />
+                </pattern>
+                <rect x="20" y="20" width="110" height="110" fill="url(#dots)" />
+            </svg>
+        </div>
+
+        <!-- 17. linearGradient & stop -->
+        <div class="card">
+            <h3>&lt;linearGradient&gt; & &lt;stop&gt;</h3>
+            <svg width="150" height="150">
+                <linearGradient id="line-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#1abc9c" />
+                    <stop offset="100%" stop-color="#9b59b6" />
+                </linearGradient>
+                <rect x="25" y="25" width="100" height="100" fill="url(#line-grad)" />
+            </svg>
+        </div>
+
+        <!-- 18. radialGradient -->
+        <div class="card">
+            <h3>&lt;radialGradient&gt;</h3>
+            <svg width="150" height="150">
+                <radialGradient id="rad-grad">
+                    <stop offset="0%" stop-color="#f1c40f" />
+                    <stop offset="100%" stop-color="#e67e22" />
+                </radialGradient>
+                <circle cx="75" cy="75" r="50" fill="url(#rad-grad)" />
+            </svg>
+        </div>
+
+        <!-- 19. marker -->
+        <div class="card">
+            <h3>&lt;marker&gt;</h3>
+            <svg width="150" height="150">
+                <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#c0392b" />
+                </marker>
+                <line x1="20" y1="75" x2="120" y2="75" stroke="#c0392b" stroke-width="4" marker-end="url(#arrow)" />
+            </svg>
+        </div>
+
+        <!-- 20. filter -->
+        <div class="card">
+            <h3>&lt;filter&gt;</h3>
+            <svg width="150" height="150">
+                <filter id="simple-filter">
+                    <!-- Simple invert-like color matrix filter -->
+                    <feColorMatrix type="matrix" values="-1 0 0 0 1  0 -1 0 0 1  0 0 -1 0 1  0 0 0 1 0" />
+                </filter>
+                <rect x="35" y="35" width="80" height="80" fill="#2ecc71" filter="url(#simple-filter)" />
+            </svg>
+        </div>
+
+        <!-- 21. feGaussianBlur -->
+        <div class="card">
+            <h3>&lt;feGaussianBlur&gt;</h3>
+            <svg width="150" height="150">
+                <filter id="blur">
+                    <feGaussianBlur stdDeviation="5" />
+                </filter>
+                <circle cx="75" cy="75" r="40" fill="#e74c3c" filter="url(#blur)" />
+            </svg>
+        </div>
+
+        <!-- 22. feDropShadow -->
+        <div class="card">
+            <h3>&lt;feDropShadow&gt;</h3>
+            <svg width="150" height="150">
+                <filter id="shadow">
+                    <feDropShadow dx="4" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.5" />
+                </filter>
+                <rect x="35" y="35" width="70" height="70" fill="#3498db" filter="url(#shadow)" />
+            </svg>
+        </div>
+
+        <!-- 23. title -->
+        <div class="card">
+            <h3>&lt;title&gt;</h3>
+            <svg width="150" height="150">
+                <rect x="35" y="35" width="80" height="80" fill="#2c3e50">
+                    <title>Hover over me to see this title tool-tip!</title>
+                </rect>
+            </svg>
+        </div>
+
+        <!-- 24. desc -->
+        <div class="card">
+            <h3>&lt;desc&gt;</h3>
+            <svg width="150" height="150">
+                <circle cx="75" cy="75" r="40" fill="#16a085">
+                    <desc>Accessible description of the SVG circle for screen readers.</desc>
+                </circle>
+            </svg>
+        </div>
+
+    </div>
+
+</body>
+</html>
