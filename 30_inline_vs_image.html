@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Inline vs SVG-as-Image (resvg) — Cascade Isolation</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            padding: 24px;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        .test-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        h2 {
+            font-size: 1.1rem;
+            margin-top: 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        .stage {
+            background: #f9f9fb;
+            border: 1px dashed #ccc;
+            padding: 12px;
+            margin-top: 12px;
+        }
+        svg, img { display: block; }
+        code { background: #f0f0f0; padding: 1px 4px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <h1>SVG Cascade Isolation — Inline vs <code>&lt;img src="logo.svg"&gt;</code></h1>
+    <p>
+        Both cards wrap their SVG in a host element carrying <code>color: red</code>.
+        The <b>inline</b> SVG uses <code>fill="currentColor"</code>, so it inherits the red
+        (the cascade crosses into it). The <b>image</b> SVG is a separate, isolated document
+        and keeps its own color (blue, from the file's explicit fill) — rendered by <b>resvg</b>.
+    </p>
+
+    <div class="container">
+
+        <!-- CASE 1: inline SVG -->
+        <div class="test-card">
+            <h2>1. Inline SVG (svg_engine)</h2>
+            <p>The <code>&lt;svg&gt;</code> lives in the host DOM and shares its CSS cascade.</p>
+            <div class="stage" style="color: #ff3b30;">
+                <svg viewBox="0 0 100 100" width="180" height="180">
+                    <circle cx="50" cy="50" r="40" fill="currentColor"/>
+                    <circle cx="50" cy="50" r="18" fill="white"/>
+                </svg>
+            </div>
+            <span style="color: #ff3b30;">■ Expected: RED ring — host <code>color</code> cascades in.</span>
+        </div>
+
+        <!-- CASE 2: SVG as image -->
+        <div class="test-card">
+            <h2>2. SVG as image (resvg)</h2>
+            <p><code>&lt;img src="logo.svg"&gt;</code> loads a separate, isolated document (the file has <code>fill="#007aff"</code>).</p>
+            <div class="stage" style="color: #ff3b30;">
+                <img src="logo.svg" alt="logo" width="180" height="180">
+            </div>
+            <span style="color: #007aff;">■ Expected: BLUE ring — its own file color; host <code>color</code> must NOT cascade in.</span>
+        </div>
+
+    </div>
+
+</body>
+</html>
