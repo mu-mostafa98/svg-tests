@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG currentColor Feature Test Suite</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+        .test-case {
+            background: white;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-top: 0;
+            font-size: 1.1rem;
+            color: #333;
+        }
+        .description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        svg {
+            border: 1px dashed #ccc;
+        }
+
+        /* Test Class 1: CSS Inherited Color */
+        .parent-red { color: #ff0000; }
+
+        /* Test Class 2: CSS Override Class */
+        .color-blue { color: #0000ff; }
+
+        /* Test Class 6: Interaction State */
+        .hover-target { color: #008000; transition: color 0.3s; }
+        .hover-target:hover { color: #ff00ff; }
+    </style>
+</head>
+<body>
+
+    <h1>SVG currentColor Test Suite</h1>
+    <p>Use this page to verify if your rendering engine correctly resolves the <code>currentColor</code> value dynamically and via inheritance.</p>
+
+    <!-- Case 1: Direct Inheritance from CSS Parent -->
+    <div class="test-case parent-red">
+        <h2>Case 1: Direct CSS Inheritance (Fill & Stroke)</h2>
+        <p class="description">Expected: Rectangle fill and Circle stroke should both be <strong>Red (#ff0000)</strong>.</p>
+        <svg width="200" height="80">
+            <rect x="10" y="10" width="60" height="60" fill="currentColor" />
+            <circle cx="130" cy="40" r="25" fill="none" stroke="currentColor" stroke-width="5" />
+        </svg>
+    </div>
+
+    <!-- Case 2: Specific Class Color Override -->
+    <div class="test-case parent-red">
+        <h2>Case 2: Overriding Parent Color via Class</h2>
+        <p class="description">Expected: Rectangle should be <strong>Blue (#0000ff)</strong> because the SVG overrides its parent's red color.</p>
+        <svg class="color-blue" width="100" height="80">
+            <rect x="10" y="10" width="60" height="60" fill="currentColor" />
+        </svg>
+    </div>
+
+    <!-- Case 3: Inline Style Inheritance -->
+    <div class="test-case">
+        <h2>Case 3: Inline Style Inheritance</h2>
+        <p class="description">Expected: Triangle should be <strong>Orange (#ffa500)</strong> defined via inline style on the SVG tag.</p>
+        <svg style="color: #ffa500;" width="100" height="80">
+            <polygon points="50,10 90,70 10,70" fill="currentColor" />
+        </svg>
+    </div>
+
+    <!-- Case 4: Presentation Attribute Fallback (color attribute) -->
+    <div class="test-case">
+        <h2>Case 4: Color Presentation Attribute</h2>
+        <p class="description">Expected: Circle should be <strong>Purple (#800080)</strong> resolved from the <code>color=""</code> attribute on the SVG root.</p>
+        <svg color="#800080" width="100" height="80">
+            <circle cx="50" cy="40" r="30" fill="currentColor" />
+        </svg>
+    </div>
+
+    <!-- Case 5: Nested Elements with Different Colors -->
+    <div class="test-case parent-red">
+        <h2>Case 5: Nested Canvas Inheritance (&lt;g&gt; tags)</h2>
+        <p class="description">Expected: Top rect is <strong>Red</strong> (inherits body/parent). Bottom rect is <strong>Teal (#008080)</strong> (inherits &lt;g&gt; style override).</p>
+        <svg width="200" height="80">
+            <rect x="10" y="10" width="60" height="60" fill="currentColor" />
+            <g style="color: #008080;">
+                <rect x="100" y="10" width="60" height="60" fill="currentColor" />
+            </g>
+        </svg>
+    </div>
+
+    <!-- Case 6: Dynamic Pseudo-classes (:hover) -->
+    <div class="test-case">
+        <h2>Case 6: Dynamic CSS Interaction (:hover)</h2>
+        <p class="description">Expected: Shapes should be <strong>Green (#008000)</strong> normally, but turn <strong>Magenta (#ff00ff)</strong> when hovering over the SVG framework.</p>
+        <svg class="hover-target" width="100" height="80">
+            <rect x="10" y="10" width="60" height="60" fill="currentColor" />
+        </svg>
+    </div>
+
+    <!-- Case 7: SVG Gradients using currentColor -->
+    <div class="test-case" style="color: #ff3300;">
+        <h2>Case 7: SVG Gradients</h2>
+        <p class="description">Expected: Gradient goes from <strong>Bright Orange-Red (#ff3300)</strong> on the left to solid transparent white on the right.</p>
+        <svg width="200" height="80">
+            <defs>
+                <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="currentColor" />
+                    <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+                </linearGradient>
+            </defs>
+            <rect x="10" y="10" width="180" height="60" fill="url(#grad1)" />
+        </svg>
+    </div>
+
+</body>
+</html>
