@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Cascade: Styles Read From Outside the &lt;svg&gt; Body</title>
+    <!--
+      Every rule below lives OUTSIDE any <svg> element. The point of this file is
+      to prove the CSS cascade reaches the SVG DOM (svg/g/path) from the
+      document's own <style>, using only fill and stroke.
+    -->
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            padding: 24px;
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        h1 { font-size: 1.4rem; }
+        h2 { font-size: 1rem; margin: 24px 0 4px; }
+
+        .case {
+            background: white;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .case svg {
+            display: block;
+            background: #fbfbfd;
+            border: 1px dashed #ddd;
+        }
+
+        .note { font-size: 0.85rem; color: #666; margin-top: 8px; }
+        code { background: #eee; padding: 1px 5px; border-radius: 4px; }
+
+        /* ---- Test 1: element selector from outside ---- */
+        .case-element path {
+            fill: #34c759;
+            stroke: #1e7a3a;
+        }
+
+        /* ---- Test 2: class selector from outside ---- */
+        .shape-orange {
+            fill: #ff9500;
+            stroke: #b36800;
+        }
+
+        /* ---- Test 3: specificity (class vs id) ---- */
+        .shape-red  { fill: #ff3b30; stroke: #b0231a; }
+        #shape-blue { fill: #007aff; stroke: #004fb3; }
+
+        /* ---- Test 4: inheritance through a group ---- */
+        .group-purple {
+            fill: #5856d6;
+            stroke: #3f3d8c;
+        }
+
+        /* ---- Test 5: inline style beats an external class ---- */
+        .shape-override { fill: #34c759; stroke: #1e7a3a; }
+    </style>
+</head>
+<body>
+
+    <h1>SVG Cascade From Outside the Body</h1>
+    <p>Only <code>&lt;svg&gt;</code>, <code>&lt;g&gt;</code>, and <code>&lt;path&gt;</code>,
+       styled only with <code>fill</code> and <code>stroke</code>. All CSS lives in the
+       <code>&lt;style&gt;</code> block above &mdash; never inside an <code>&lt;svg&gt;</code>.</p>
+
+    <!-- 1 -->
+    <div class="case case-element">
+        <h2>1. Element selector (<code>.case-element path</code>)</h2>
+        <svg width="200" height="100" viewBox="0 0 100 100">
+            <path d="M 10 10 H 90 V 90 H 10 Z" />
+        </svg>
+        <div class="note">Expected: <b>green</b> rectangle with a darker green outline.</div>
+    </div>
+
+    <!-- 2 -->
+    <div class="case">
+        <h2>2. Class selector (<code>.shape-orange</code>)</h2>
+        <svg width="200" height="100" viewBox="0 0 100 100">
+            <path class="shape-orange" d="M 50 12 L 92 88 L 8 88 Z" />
+        </svg>
+        <div class="note">Expected: <b>orange</b> triangle.</div>
+    </div>
+
+    <!-- 3 -->
+    <div class="case">
+        <h2>3. Specificity &mdash; ID beats class (<code>#shape-blue</code> over <code>.shape-red</code>)</h2>
+        <svg width="200" height="100" viewBox="0 0 100 100">
+            <path id="shape-blue" class="shape-red" d="M 50 10 L 90 50 L 50 90 L 10 50 Z" />
+        </svg>
+        <div class="note">Expected: <b>blue</b> diamond (ID wins over the red class).</div>
+    </div>
+
+    <!-- 4 -->
+    <div class="case">
+        <h2>4. Inheritance through a <code>&lt;g&gt;</code> (<code>.group-purple</code>)</h2>
+        <svg width="200" height="100" viewBox="0 0 100 100">
+            <g class="group-purple">
+                <path d="M 8 20 H 45 V 55 H 8 Z" />
+                <path d="M 60 15 L 92 55 L 60 55 Z" />
+            </g>
+        </svg>
+        <div class="note">Expected: <b>purple</b> rectangle and triangle (both inherit fill/stroke from the group).</div>
+    </div>
+
+    <!-- 5 -->
+    <div class="case">
+        <h2>5. Inline style beats an external class</h2>
+        <svg width="200" height="100" viewBox="0 0 100 100">
+            <path class="shape-override" style="fill: #ff3b30; stroke: #b0231a;" d="M 10 15 A 40 40 0 1 1 9.9 15 Z" />
+        </svg>
+        <div class="note">Expected: <b>red</b> teardrop (inline <code>fill</code> overrides the external green class).</div>
+    </div>
+
+</body>
+</html>
