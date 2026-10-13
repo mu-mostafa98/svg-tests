@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Selection Highlight Test Suite</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+        .test-case {
+            background: white;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-top: 0;
+            font-size: 1.1rem;
+            color: #333;
+        }
+        .description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        svg {
+            border: 1px dashed #ccc;
+        }
+        .controls {
+            margin-bottom: 16px;
+        }
+        .controls button {
+            font-size: 0.9rem;
+            margin-right: 6px;
+        }
+
+        /* A vivid selection color so the 50%-alpha tint is unmistakable. */
+        ::selection {
+            background: rgb(0, 255, 0);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>SVG Selection Highlight Test Suite</h1>
+    <p>Select an SVG below (use the buttons, or drag-select over the page) and check whether a translucent green tint appears over the SVG's box.</p>
+
+    <div class="controls">
+        <button onclick="select('case1')">Select Case 1</button>
+        <button onclick="select('case2')">Select Case 2</button>
+        <button onclick="select('case3')">Select Case 3</button>
+        <button onclick="select('case4')">Select Case 4</button>
+        <button onclick="select('all')">Select everything</button>
+        <button onclick="clearSelection()">Clear selection</button>
+    </div>
+
+    <!-- Case 1: filled shape -->
+    <div class="test-case">
+        <h2>Case 1: Filled shape</h2>
+        <p class="description">Expected: the SVG's 200&times;100 box gets a <strong>semi-transparent green</strong> overlay on top of the red circle.</p>
+        <div id="case1">
+            <svg width="200" height="100">
+                <circle cx="100" cy="50" r="40" fill="#e33" />
+            </svg>
+        </div>
+    </div>
+
+    <!-- Case 2: mostly-empty SVG -->
+    <div class="test-case">
+        <h2>Case 2: Mostly-empty SVG</h2>
+        <p class="description">Expected: the tint still covers the whole box (selection is box-level, not shape-aware).</p>
+        <div id="case2">
+            <svg width="200" height="100">
+                <rect x="150" y="10" width="20" height="20" fill="#33e" />
+            </svg>
+        </div>
+    </div>
+
+    <!-- Case 3: text + inline SVG -->
+    <div class="test-case">
+        <h2>Case 3: Text + inline SVG</h2>
+        <p class="description">Expected: the text and the inline SVG both show selection highlight.</p>
+        <div id="case3">
+            some text
+            <svg width="120" height="60" style="display: inline-block; vertical-align: middle;">
+                <rect x="10" y="10" width="100" height="40" fill="#e93" />
+            </svg>
+            more text
+        </div>
+    </div>
+
+    <!-- Case 4: custom ::selection color -->
+    <div class="test-case">
+        <h2>Case 4: Custom ::selection color</h2>
+        <p class="description">Expected: a <strong>blue</strong> tint (this case overrides the global green).</p>
+        <div id="case4">
+            <style>#case4 ::selection { background: rgb(0, 0, 255); }</style>
+            <svg width="200" height="100">
+                <rect x="10" y="10" width="180" height="80" fill="#ddd" />
+            </svg>
+        </div>
+    </div>
+
+    <script>
+        function select(id) {
+            clearSelection();
+            const sel = document.getSelection();
+            if (id === 'all') {
+                sel.selectAllChildren(document.body);
+            } else {
+                sel.selectAllChildren(document.getElementById(id));
+            }
+        }
+        function clearSelection() {
+            document.getSelection().removeAllRanges();
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Incremental: currentColor change</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; background: #f7f7f7; }
+  svg { border: 1px dashed #ccc; background: #fff; }
+  button { display: block; margin-top: 12px; }
+</style>
+</head>
+<body>
+<!--
+  IDEA: "currentColor change" — change the inherited `color` that a
+  fill="currentColor" element resolves against. The child rebuilds [CurrentColor]
+  because the threaded currentColor changed.
+
+  RUN:
+    ./mach build --features servo-svg -d
+    RUST_LOG=svg=debug ./mach run -d 07_currentcolor_change.html
+
+  EXPECT (on each click, steady state — press 2+):
+    svg: build <g#tint> [SubtreeDirty]   (its style attribute changed)
+    svg: build <rect#c> [CurrentColor]   (the inherited currentColor changed — the key signal)
+    svg: reuse <rect#other>              (untouched sibling)
+  Note: on the FIRST click `rect#other` may instead show [ComputedStyle] from the
+  one-time style re-cascade (same as 05); press 2+ shows the clean reuse.
+-->
+<h1>07 — currentColor change</h1>
+<svg id="root" width="240" height="120">
+  <g id="tint" style="color: #e74c3c">
+    <rect id="c" x="10" y="10" width="80" height="80" fill="currentColor"/>
+  </g>
+  <rect id="other" x="150" y="10" width="60" height="60" fill="blue"/>
+</svg>
+<p><button id="btn">Toggle inherited color (red ↔ green)</button></p>
+<script>
+  let green = false;
+  document.getElementById('btn').onclick = () => {
+    green = !green;
+    document.getElementById('tint').setAttribute(
+      'style',
+      green ? 'color: #2ecc71;' : 'color: #e74c3c;'
+    );
+  };
+</script>
+</body>
+</html>

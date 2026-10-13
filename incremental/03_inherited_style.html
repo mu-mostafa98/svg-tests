@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Incremental: inherited style change</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; background: #f7f7f7; }
+  svg { border: 1px dashed #ccc; background: #fff; }
+  button { display: block; margin-top: 12px; }
+</style>
+</head>
+<body>
+<!--
+  IDEA: "Inherited style change" — change an ancestor <g> presentation attribute
+  (fill) that is inherited by its descendants. The <g> rebuilds [SubtreeDirty]; its
+  styled descendants rebuild [ComputedStyle] (their computed style changed without
+  a DOM mutation — this is the Arc::ptr_eq check); an unrelated sibling reuses.
+
+  RUN:
+    ./mach build --features servo-svg -d
+    RUST_LOG=svg=debug ./mach run -d 03_inherited_style.html
+
+  EXPECT (on each click):
+    svg: build <g#group> [SubtreeDirty]
+    svg: build <rect#r1> [ComputedStyle]
+    svg: build <rect#c1> [ComputedStyle]
+    svg: reuse <rect#other>
+-->
+<h1>03 — inherited style change</h1>
+<svg id="root" width="300" height="120">
+  <g id="group" fill="blue">
+    <rect id="r1" x="10" y="10" width="60" height="60"/>
+    <rect id="c1" x="95" y="15" width="50" height="50"/>
+  </g>
+  <rect id="other" x="220" y="10" width="60" height="60" fill="green"/>
+</svg>
+<p><button id="btn">Toggle group fill (blue ↔ green)</button></p>
+<script>
+  let green = false;
+  document.getElementById('btn').onclick = () => {
+    green = !green;
+    document.getElementById('group').setAttribute('fill', green ? 'green' : 'blue');
+  };
+</script>
+</body>
+</html>

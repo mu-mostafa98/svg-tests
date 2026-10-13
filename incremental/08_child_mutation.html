@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Incremental: child mutation under an unchanged group</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; background: #f7f7f7; }
+  svg { border: 1px dashed #ccc; background: #fff; }
+  button { display: block; margin-top: 12px; }
+</style>
+</head>
+<body>
+<!--
+  IDEA: "Child mutation under an unchanged group" — mutate a <rect> that is a
+  CHILD of a <g>, but never touch the <g> itself. Shows that subtree caching is
+  SAFE: a child mutation bumps the ancestor's inclusive_descendants_version, so
+  the group's cache entry is invalidated and the group rebuilds (reaching the
+  mutated child) instead of being wrongly reused.
+
+  RUN:
+    ./mach build --features servo-svg -d
+    RUST_LOG=svg=debug ./mach run -d 08_child_mutation.html
+
+  EXPECT (on each click):
+    svg: build <g#group> [SubtreeDirty]   (the KEY line — the group rebuilds
+                                         because its CHILD changed, even though
+                                         the group's own attrs never changed)
+    svg: build <rect#a> [SubtreeDirty]    (the actually-mutated child)
+    svg: reuse <rect#b>               (the untouched sibling; on the FIRST
+                                         click it may instead show [ComputedStyle]
+                                         from the button-focus one-time over-build)
+    svg: reuse <g#group>                (the second build pass reuses the group)
+-->
+<h1>08 — child mutation under an unchanged group</h1>
+<svg id="root" width="300" height="120">
+  <g id="group">
+    <rect id="a" x="10" y="10" width="40" height="60" fill="red"/>
+    <rect id="b" x="125" y="15" width="50" height="50" fill="blue"/>
+  </g>
+</svg>
+<p><button id="btn">Toggle child rect width (40 ↔ 80)</button></p>
+<script>
+  let wide = false;
+  document.getElementById('btn').onclick = () => {
+    wide = !wide;
+    document.getElementById('a').setAttribute('width', wide ? '80' : '40');
+  };
+</script>
+</body>
+</html>

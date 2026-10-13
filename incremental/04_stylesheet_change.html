@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Incremental: stylesheet change</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; background: #f7f7f7; }
+  svg { border: 1px dashed #ccc; background: #fff; }
+  button { display: block; margin-top: 12px; }
+</style>
+<!-- The rule under test (an id selector, NOT a class selector). -->
+<style id="rule">
+  #tinted { fill: #e74c3c; }
+</style>
+</head>
+<body>
+<!--
+  IDEA: "Stylesheet change" — a non-class CSS rule restyles one element via Stylo.
+  The restyled element rebuilds [ComputedStyle]; the other reuses.
+
+  RUN:
+    ./mach build --features servo-svg -d
+    RUST_LOG=svg=debug ./mach run -d 04_stylesheet_change.html
+
+  WHY NOT a .class rule: a class-based rule inside an SVG <style> is collected by
+  the engine's own class-rule cache (collect_svg_css_rules), and editing it clears
+  the ENTIRE root cache (every node rebuilds [NoEntry]). An id/type selector — or a
+  truly external stylesheet — restyles only the matched elements via Stylo, so it
+  surfaces as the targeted [ComputedStyle] miss.
+
+  WHY no helper mutation: a fill-only style change produces only paint damage in
+  Stylo, but layout upgrades that to box damage for SVG elements (see
+  `compute_damage_and_rebuild_box_tree_below_dirty_root` in layout/traversal.rs),
+  so the root <svg> box re-runs `build_svg_tree` on its own — no data-tick needed.
+
+  EXPECT (on each click):
+    svg: build <rect#tinted>  [ComputedStyle]
+    svg: build <rect#plain> [ComputedStyle]
+  The sibling also rebuilds (over-rebuild, not reuse): a <style> text edit makes
+  Servo re-cascade styles broadly, so every element — even an unmatched one like
+  <rect#plain> — gets a fresh ComputedValues box. The cache keys on box identity,
+  so it rebuilds both. Safe, but this case shows a stylesheet edit is blunt, not
+  targeted: it can't isolate the one matched element.
+-->
+<h1>04 — stylesheet change</h1>
+<svg id="root" width="240" height="120">
+  <rect id="tinted" x="10" y="10" width="60" height="60"/>
+  <rect id="plain" x="125" y="15" width="50" height="50" fill="blue"/>
+</svg>
+<p><button id="btn">Toggle stylesheet rule (red ↔ green)</button></p>
+<script>
+  let green = false;
+  document.getElementById('btn').onclick = () => {
+    green = !green;
+    document.getElementById('rule').textContent =
+      green ? '#tinted { fill: #2ecc71; }' : '#tinted { fill: #e74c3c; }';
+  };
+</script>
+</body>
+</html>

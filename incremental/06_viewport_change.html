@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Incremental: viewport change</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; background: #f7f7f7; }
+  svg { border: 1px dashed #ccc; background: #fff; }
+  button { display: block; margin-top: 12px; }
+</style>
+</head>
+<body>
+<!--
+  IDEA: "Viewport change" — change one nested <svg>'s viewBox so its child's
+  vw/vh reference dimensions change (percentages resolve against the viewBox
+  extent). Two nested <svg> subtrees sit side by side, each with one child;
+  mutate only the LEFT one. The contrast: the mutated <svg> rebuilds
+  [SubtreeDirty] (its own viewBox attribute changed), its child rebuilds
+  [Viewport] (its percentage reference changed), while the untouched sibling
+  <svg> and its child reuse.
+
+  RUN:
+    ./mach build --features servo-svg -d
+    RUST_LOG=svg=debug ./mach run -d 06_viewport_change.html
+
+  EXPECT (on each click):
+    svg: build <svg#svga> [SubtreeDirty]  (its own viewBox attribute was mutated)
+    svg: build <rect#ra> [Viewport]       (svga's viewBox extent changed the child's vw/vh)
+    svg: reuse <svg#svgb>                 (untouched nested <svg>; rb comes back inside it)
+    svg: reuse <rect#rb>                  (untouched child — not looked up separately once svgb reuses)
+  Note: no [ComputedStyle] noise here (unlike 05's `fill` case) — `viewBox` is a
+  pure geometry attribute with no CSS property, so changing it never re-cascades
+  styles; the untouched sibling reuses cleanly on the very first press.
+-->
+<h1>06 — viewport change</h1>
+<svg id="root" width="440" height="180">
+  <svg id="svga" x="10" y="10" width="200" height="160" viewBox="0 0 100 60">
+    <rect id="ra" x="0" y="0" width="100%" height="100%" fill="red"/>
+  </svg>
+  <svg id="svgb" x="230" y="10" width="200" height="160" viewBox="0 0 100 60">
+    <rect id="rb" x="0" y="0" width="100%" height="100%" fill="blue"/>
+  </svg>
+</svg>
+<p><button id="btn">Toggle svga viewBox (0 0 100 60 ↔ 0 0 200 120)</button></p>
+<script>
+  let big = false;
+  document.getElementById('btn').onclick = () => {
+    big = !big;
+    document.getElementById('svga').setAttribute('viewBox', big ? '0 0 200 120' : '0 0 100 60');
+  };
+</script>
+</body>
+</html>

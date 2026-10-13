@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Incremental: leaf attribute change</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; background: #f7f7f7; }
+  svg { border: 1px dashed #ccc; background: #fff; }
+  button { display: block; margin-top: 12px; }
+</style>
+</head>
+<body>
+<!--
+  IDEA: "Leaf attribute change" — change one shape's own attribute.
+  The changed shape rebuilds with [SubtreeDirty]; its siblings reuse.
+
+  RUN:
+    ./mach build --features servo-svg -d
+    RUST_LOG=svg=debug ./mach run -d 02_leaf_attribute.html
+
+  EXPECT (on each click):
+    svg: build <rect#box> [SubtreeDirty]
+    svg: reuse <rect#ball>
+-->
+<h1>02 — leaf attribute change</h1>
+<svg id="root" width="240" height="120">
+  <rect id="box" x="10" y="10" width="40" height="60" fill="red"/>
+  <rect id="ball" x="125" y="15" width="50" height="50" fill="blue"/>
+</svg>
+<p><button id="btn">Toggle rect width (40 ↔ 80)</button></p>
+<script>
+  let wide = false;
+  document.getElementById('btn').onclick = () => {
+    wide = !wide;
+    document.getElementById('box').setAttribute('width', wide ? '80' : '40');
+  };
+</script>
+</body>
+</html>

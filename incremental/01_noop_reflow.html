@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Incremental: no-op reflow</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; background: #f7f7f7; }
+  svg { border: 1px dashed #ccc; background: #fff; }
+  button { display: block; margin-top: 12px; }
+</style>
+</head>
+<body>
+<!--
+  IDEA: "No-op reflow" — re-run the SVG build without changing any semantic content.
+
+  RUN:
+    ./mach build --features servo-svg -d
+    RUST_LOG=svg=debug ./mach run -d 01_noop_reflow.html
+
+  The button mutates a harmless data-* attribute on the root <svg>, which marks
+  the root dirty (Level-1 damage -> box rebuild -> build_svg_tree). Two things the
+  log then reveals:
+
+  1. build_svg_tree runs more than once per reflow (the replaced element's contents
+     are constructed from several layout call sites). The first call rebuilds and
+     repopulates the cache; the second call reuses it.
+  2. Mutating the root re-cascades the whole subtree, allocating fresh
+     ComputedValues Arcs for every descendant, so the first call over-rebuilds them
+     with [ComputedStyle] (the conservative side of the ptr_eq check — safe, not a
+     bug). The second call then logs reuse.
+
+  EXPECT (on each click):
+    pass 1:  build <rect#a> [ComputedStyle]   build <rect#b> [ComputedStyle]
+    pass 2:  reuse <rect#a>                    reuse <rect#b>
+
+  For the clean "one node rebuilds, its sibling reuses" signal, see
+  02_leaf_attribute.html.
+-->
+<h1>01 — no-op reflow</h1>
+<svg id="root" width="240" height="120">
+  <rect id="a" x="10" y="10" width="60" height="60" fill="red"/>
+  <rect id="b" x="125" y="15" width="50" height="50" fill="blue"/>
+</svg>
+<p><button id="btn">Trigger a no-op reflow</button></p>
+<script>
+  let tick = 0;
+  document.getElementById('btn').onclick = () => {
+    tick += 1;
+    document.getElementById('root').setAttribute('data-tick', String(tick));
+  };
+</script>
+</body>
+</html>

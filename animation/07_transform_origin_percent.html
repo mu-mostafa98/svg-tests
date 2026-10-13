@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SVG transform-origin percentage</title>
+<style>
+  body { font-family: sans-serif; margin: 2rem; }
+  .card { display: inline-block; vertical-align: top; margin: 1rem; }
+  h3 { font-size: 14px; margin: 0 0 6px; }
+
+  /* :hover scale about the viewport center (50% 50% = 100,100). */
+  .hover-scale {
+    fill: #007aff;
+    transition: transform 0.4s ease;
+    transform-origin: 50% 50%;
+    cursor: pointer;
+  }
+  .hover-scale:hover { transform: scale(1.5); }
+
+  /* Continuous rotation about the viewport center. */
+  @keyframes spin-center {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  .spin-center {
+    animation: spin-center 4s linear infinite;
+    transform-origin: 50% 50%;
+  }
+
+  /* Reference: the exact point 50% 50% should resolve to. */
+  .center-dot { fill: #ff3b30; }
+  .cross { stroke: #ff3b30; stroke-width: 1; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h3>1. :hover scale, transform-origin: 50% 50%</h3>
+  <svg width="200" height="200" viewBox="0 0 200 200">
+    <line x1="100" y1="0" x2="100" y2="200" class="cross"/>
+    <line x1="0" y1="100" x2="200" y2="100" class="cross"/>
+    <rect x="80" y="80" width="40" height="40" rx="4" class="hover-scale"/>
+    <circle cx="100" cy="100" r="3" class="center-dot"/>
+  </svg>
+  <p>Hover the blue square: it must scale about (100,100) — center stays on the red dot, growing in all 4 directions.</p>
+</div>
+
+<div class="card">
+  <h3>2. @keyframes rotate, transform-origin: 50% 50%</h3>
+  <svg width="200" height="200" viewBox="0 0 200 200">
+    <line x1="100" y1="0" x2="100" y2="200" class="cross"/>
+    <line x1="0" y1="100" x2="200" y2="100" class="cross"/>
+    <g class="spin-center">
+      <rect x="70" y="70" width="60" height="60" fill="#ff9500"/>
+      <circle cx="80" cy="100" r="6" fill="#ffffff"/>
+    </g>
+    <circle cx="100" cy="100" r="3" class="center-dot"/>
+  </svg>
+  <p>The orange square must spin in place about (100,100) without drifting.</p>
+</div>
+
+</body>
+</html>

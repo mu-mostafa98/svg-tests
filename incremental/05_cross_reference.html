@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Incremental: cross-reference change</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; background: #f7f7f7; }
+  svg { border: 1px dashed #ccc; background: #fff; }
+  button { display: block; margin-top: 12px; }
+</style>
+</head>
+<body>
+<!--
+  IDEA: "Cross-reference change" — a <use> is cached against its target.
+  Two <use> elements reference two different definitions; mutate only ONE of them.
+  The contrast: the untouched definition AND the <use> pointing at it both REUSE,
+  while the <use> whose target changed rebuilds with the cross-reference reason.
+  (A simple <use> — one whose target is itself cross-reference-free — is cached
+  keyed on the target's version + style, so it reuses only while its target is
+  unchanged.)
+
+  RUN:
+    ./mach build --features servo-svg -d
+    RUST_LOG=svg=debug ./mach run -d 05_cross_reference.html
+
+  EXPECT (key signals, on each click — first build pass):
+    svg: build <path#arrow1> [SubtreeDirty]  (the referenced element was mutated)
+    svg: reuse <path#arrow2>               (untouched definition — a plain <path> caches)
+    svg: build <use#u1> [ReferencedTarget]         (its target #arrow1 changed, so the <use> rebuilds)
+    svg: reuse <use#u2>                    (its target #arrow2 didn't change, so the <use> reuses)
+  A second build pass in the same reflow then logs `reuse <use#u1>` too.
+  The point: a <use> is now reused exactly when neither it nor its target changed.
+-->
+<h1>05 — cross-reference change</h1>
+<svg id="root" width="240" height="120">
+  <defs>
+    <path id="arrow1" d="M 0 40 L 40 40 L 20 10 Z" fill="red"/>
+    <path id="arrow2" d="M 0 40 L 40 40 L 20 10 Z" fill="blue"/>
+  </defs>
+  <use id="u1" href="#arrow1" x="20" y="20"/>
+  <use id="u2" href="#arrow2" x="120" y="20"/>
+</svg>
+<p><button id="btn">Toggle arrow1 fill (red ↔ green)</button></p>
+<script>
+  let green = false;
+  document.getElementById('btn').onclick = () => {
+    green = !green;
+    document.getElementById('arrow1').setAttribute('fill', green ? 'green' : 'red');
+  };
+</script>
+</body>
+</html>
