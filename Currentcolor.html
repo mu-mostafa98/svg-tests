@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>currentColor SVG resolution test</title>
+    <style>
+        body{font:12px Arial,sans-serif;color:#000}
+        .case{border:1px solid #ccc;padding:8px;margin:8px 0}
+        .case h3{margin:0 0 4px}
+        .case .expect{color:#666;margin:8px 0 0px}
+        .wrap{display:flex;gap:16px;align-items:center}
+        .box{width:40px;height:40px}
+    </style>
+</head>
+<body>
+
+<section class="case">
+    <h3>7) presentation attr fill="currentColor" vs CSS fill rule</h3>
+    <style>
+        .case7 rect{fill:rgb(255,0,255)}
+    </style>
+    <div style="color:rgb(0,128,255)">
+        <svg width="40" height="40"><rect x="0" y="0" width="40" height="40" fill="currentColor"></rect></svg>
+        <span class="case7">
+            <svg width="40" height="40"><rect x="0" y="0" width="40" height="40" fill="currentColor"></rect></svg>
+        </span>
+    </div>
+    <p class="expect">first: blue (attr currentColor, no CSS) | second: magenta (CSS rule beats presentation attribute)</p>
+</section>
+
+</body>
+</html>
